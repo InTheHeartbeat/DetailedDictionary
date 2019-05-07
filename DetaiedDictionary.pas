@@ -276,21 +276,49 @@ begin
         GetUserSelection := '-';
 end;
 
-procedure PrintWordWithDetailsByIndex(index: integer);
+procedure PrintWordDetailsByIndex(index: integer);
 begin
-    Writeln(index, ': "', words[index], '" , base "', wordBases[index], '", type of ,', wordTypes[index], ', prepositions list: ', wordPrepos[index]);
+    Writeln(index, ': "', words[index], '" , base "', wordBases[index], '", type of ', wordTypes[index], ', prepositions list: ', wordPrepos[index]);
     Writeln();
 end;
 
 procedure PrintEntireDictionary();
 begin
     for i : integer := 0 to words.Length - 1 do
-        PrintWordWithDetailsByIndex(i);
+        PrintWordDetailsByIndex(i);
+end;
+
+procedure PrintWordDetailsByBase(wordBase: string);
+begin
+    for i : integer := 0 to wordBases.Length - 1 do
+    begin
+        if wordBases[i] = wordBase then
+        begin
+            PrintWordDetailsByIndex(i);
+            exit;
+        end;
+    end;
 end;
 
 procedure FindUserWord();
+  var requestedWord : string;
+      requestedWordBase : string;
 begin
-
+    Write('Enter request: ');
+    Readln(requestedWord);
+    
+    if not WordIsMeaningful(requestedWord) then
+      exit;
+      
+    requestedWordBase := DetectWordBase(requestedWord);
+      
+    if not StringArrayContains(wordBases, requestedWordBase) then
+    begin
+      Writeln('The requested word is not found in the dictionary. User option 1 in menu to add it to dictionary.');
+      exit;
+    end;
+    
+    PrintWordDetailsByBase(requestedWordBase);
 end;
 
 procedure UserMenu();
