@@ -276,9 +276,16 @@ begin
         GetUserSelection := '-';
 end;
 
+procedure PrintWordWithDetailsByIndex(index: integer);
+begin
+    Writeln(index, ': "', words[index], '" , base "', wordBases[index], '", type of ,', wordTypes[index], ', prepositions list: ', wordPrepos[index]);
+    Writeln();
+end;
+
 procedure PrintEntireDictionary();
 begin
-
+    for i : integer := 0 to words.Length - 1 do
+        PrintWordWithDetailsByIndex(i);
 end;
 
 procedure FindUserWord();
@@ -296,7 +303,7 @@ begin
         begin
           FillDictionary();
         end
-        else if selection = '3' then
+        else if selection = '2' then
         begin
           FindUserWord();
         end
