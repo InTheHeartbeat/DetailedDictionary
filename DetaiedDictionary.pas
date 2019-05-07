@@ -1,4 +1,5 @@
 program DetailedDictionary;
+uses Crt;
 
   var words            : array of string;
       wordBases        : array of string;
@@ -215,10 +216,57 @@ begin
 end;
 
 
+procedure FillDictionary();
+begin
+    ParseUserInputToWords();
+    PrintStringArray(wordBases);
+end;
+
+
+function GetUserSelection(): char;
+  var selection: char;
+begin
+    Writeln();
+    Writeln('Main menu');
+    Writeln('1 - Enter and parse text');
+    Writeln('2 - Search');
+    Writeln('Any other key - exit');
+    Write('Select option: ');
+    selection := ReadKey();
+    Writeln(selection);
+    Writeln();
+
+    if (selection = '1') or (selection = '2') then
+    begin
+        GetUserSelection := selection;
+    end
+    else
+        GetUserSelection := '-';
+end;
+
+
+procedure UserMenu();
+  var selection : char;
+begin  
+    selection := '-';
+    repeat   
+        selection := GetUserSelection();
+        if selection = '1' then
+        begin
+          FillDictionary();
+        end
+        else if selection = '2' then
+        begin
+        
+        end
+        else
+          Break;
+    until selection <> '-';
+end;
+
 //Main module
 begin
     Initialize();
-    ParseUserInputToWords();
-    PrintStringArray(wordBases);
+    UserMenu();
 end.
 
