@@ -1,28 +1,23 @@
 program DetailedDictionary;
-uses Crt;
 
   var words            : array of string;
       wordBases        : array of string;
       wordTypes        : array of string;
-      wordPrepos       : array of string;
-      wordSingleVocal  : array of char;    
-      wordPluralVocal  : array of char;    
+      wordPrepos       : array of string;  
       
       vocals           : array of char;
       separators       : array of char;
    
 
 procedure PrintCharArray(var arr: array of char);
-  var i : integer;
 begin
-    for i := 0 to arr.Length - 1 do
+    for i : integer := 0 to arr.Length - 1 do
         Writeln(arr[i]);
 end;
 
 procedure PrintStringArray(var arr: array of string);
-  var i : integer;
 begin
-    for i := 0 to arr.Length - 1 do
+    for i : integer := 0 to arr.Length - 1 do
         Writeln(arr[i]);
 end;
 
@@ -42,9 +37,8 @@ end;
 
 
 function CharArrayContains(var arr: array of char; c: char) : boolean;
-  var i : integer;
 begin
-    for i := 0 to arr.Length - 1 do
+    for i : integer := 0 to arr.Length - 1 do
     begin
         if arr[i] = c then
         begin
@@ -56,9 +50,8 @@ end;
 
 
 function StringArrayContains(var arr: array of string; str: string) : boolean;
-  var i : integer;
 begin
-    for i := 0 to arr.Length - 1 do
+    for i : integer := 0 to arr.Length - 1 do
     begin
         if CompareStr(arr[i], str) = 0 then
         begin
@@ -122,30 +115,23 @@ begin
 end;
 
 
-function IsSeparator(ch: char) : boolean;
-  var i : integer;
+function IsSeparator(ch: char) : boolean;  
+  var cx : integer;  
 begin
-    IsSeparator := false;
-    for i := 0 to separators.Length - 1 do
-    begin
-        if separators[i] = ch then 
-        begin
-            IsSeparator := true;
-            Break;
-        end;
-    end;    
+    cx := Ord(ch);
+    IsSeparator := true;
+    IsSeparator := not (((cx >= 65) and (cx <= 90)) or ((cx >= 97) and (cx <= 122)) or ((cx >= 912) and (cx <= 1135)));
 end;
 
 
 function WordIsMeaningful(currentWord : string) : boolean;
-  var i : integer;
 begin
-    WordIsMeaningful := true;    
-    for i := 1 to currentWord.Length do
+    WordIsMeaningful := false;    
+    for i : integer := 1 to currentWord.Length do
     begin 
-        if IsSeparator(currentWord[i]) then
+        if not IsSeparator(currentWord[i]) then
         begin
-            WordIsMeaningful := false;
+            WordIsMeaningful := true;
             break;
         end;
     end;
@@ -172,6 +158,7 @@ begin
     wordBase := DetectWordBase(currentWord);
     if not StringArrayContains(wordBases, wordBase) then
     begin
+        AddStringToArray(words, currentWord);
         AddStringToArray(wordBases, wordBase);
     end;
 end;
@@ -180,12 +167,14 @@ end;
 procedure ParseStringToWords(data: string);
   var currentWord  : string;
       currentChar  : char;
-      dataPosition : integer;
 begin
+    if not WordIsMeaningful(data) then
+      exit;
+
     currentWord := '';
     currentChar := ' ';
     
-    for dataPosition := 1 to data.Length do
+    for dataPosition : integer := 1 to data.Length do
     begin
         currentChar := data[dataPosition];
     
@@ -216,10 +205,52 @@ begin
 end;
 
 
+procedure RequestFirstUnknownWordInfo();
+  var unknownWordIndex : integer;  
+      unknownWordBase : string;
+      unknownWordContext : string;
+      unknownWordType : string;
+      unknownWordPrepositions : string;
+begin
+    unknownWordIndex := wordTypes.Length;
+    unknownWordBase := wordBases[unknownWordIndex];
+    unknownWordContext := words[unknownWordIndex];
+    
+    Writeln();
+    Writeln('The word base "', unknownWordBase, '" found in context of "', unknownWordContext, '".');
+    Write('Enter the base word construction (single, named): ');
+    Readln(unknownWordContext); 
+    Writeln();
+    Write('Enter the word type: ');
+    Readln(unknownWordType);
+    Writeln();
+    Write('Enter all the prepositions splitted with space: ');
+    Readln(unknownWordPrepositions);
+    Writeln();
+    
+    words[unknownWordIndex] := unknownWordContext;
+    AddStringToArray(wordTypes, unknownWordType);
+    AddStringToArray(wordPrepos, unknownWordPrepositions);
+    
+    Writeln('Record completed');
+    Writeln();
+end;
+
+
+procedure RequestUnknownWordsInfo();
+begin
+    while wordBases.Length > wordTypes.Length do
+    begin
+        RequestFirstUnknownWordInfo();
+    end;
+    Writeln('Currently, all the words are recorded');
+end;
+
+
 procedure FillDictionary();
 begin
     ParseUserInputToWords();
-    PrintStringArray(wordBases);
+    RequestUnknownWordsInfo();
 end;
 
 
@@ -230,13 +261,14 @@ begin
     Writeln('Main menu');
     Writeln('1 - Enter and parse text');
     Writeln('2 - Search');
+    Writeln('3 - Print entire dictionary');
     Writeln('Any other key - exit');
     Write('Select option: ');
-    selection := ReadKey();
+    Readln(selection);
     Writeln(selection);
     Writeln();
 
-    if (selection = '1') or (selection = '2') then
+    if (selection = '1') or (selection = '2') or (selection = '3') then
     begin
         GetUserSelection := selection;
     end
@@ -244,6 +276,15 @@ begin
         GetUserSelection := '-';
 end;
 
+procedure PrintEntireDictionary();
+begin
+
+end;
+
+procedure FindUserWord();
+begin
+
+end;
 
 procedure UserMenu();
   var selection : char;
@@ -255,13 +296,19 @@ begin
         begin
           FillDictionary();
         end
-        else if selection = '2' then
+        else if selection = '3' then
         begin
-        
+          FindUserWord();
+        end
+        else if selection = '3' then
+        begin
+          PrintEntireDictionary();
         end
         else
           Break;
-    until selection <> '-';
+    until selection = '-';
+    
+    Writeln('User exit: program terminated.');
 end;
 
 //Main module
