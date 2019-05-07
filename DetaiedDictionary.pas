@@ -11,14 +11,14 @@ program DetailedDictionary;
       separators       : array of char;
    
 
-procedure PrintCharArray(arr: array of char);
+procedure PrintCharArray(var arr: array of char);
   var i : integer;
 begin
     for i := 0 to arr.Length - 1 do
         Writeln(arr[i]);
 end;
 
-procedure PrintStringArray(arr: array of string);
+procedure PrintStringArray(var arr: array of string);
   var i : integer;
 begin
     for i := 0 to arr.Length - 1 do
@@ -26,21 +26,21 @@ begin
 end;
 
 
-procedure AddCharToArray(arr: array of char; ch: char);
+procedure AddCharToArray(var arr: array of char; ch: char);
 begin
     SetLength(arr, arr.Length + 1);
     arr[arr.Length - 1] := ch;
 end;
 
 
-procedure AddStringToArray(arr: array of string; str: string);
+procedure AddStringToArray(var arr: array of string; str: string);
 begin
     SetLength(arr, arr.Length + 1);
     arr[arr.Length - 1] := str;
 end;
 
 
-function CharArrayContains(arr: array of char; c: char) : boolean;
+function CharArrayContains(var arr: array of char; c: char) : boolean;
   var i : integer;
 begin
     for i := 0 to arr.Length - 1 do
@@ -54,7 +54,7 @@ begin
 end;
 
 
-function StringArrayContains(arr: array of string; str: string) : boolean;
+function StringArrayContains(var arr: array of string; str: string) : boolean;
   var i : integer;
 begin
     for i := 0 to arr.Length - 1 do
@@ -76,7 +76,8 @@ end;
    
 function LastCharOf(str: string) : char;
 begin
-    LastCharOf := str[str.Length];
+    if str.Length <> 0 then
+        LastCharOf := str[str.Length];
 end;
    
    
@@ -138,11 +139,13 @@ end;
 function WordIsMeaningful(currentWord : string) : boolean;
   var i : integer;
 begin
+    WordIsMeaningful := true;    
     for i := 1 to currentWord.Length do
     begin 
-        if not IsSeparator(currentWord[i]) then
+        if IsSeparator(currentWord[i]) then
         begin
-            WordIsMeaningful := true;
+            WordIsMeaningful := false;
+            break;
         end;
     end;
 end;
@@ -185,15 +188,21 @@ begin
     begin
         currentChar := data[dataPosition];
     
-        if IsSeparator(currentChar) and WordIsMeaningful(currentWord) then
+        if IsSeparator(currentChar) then
         begin
-            NormalizeAndFlushWord(currentWord);
+            if WordIsMeaningful(currentWord) then
+                NormalizeAndFlushWord(currentWord);
+                
+            currentWord := '';
         end
         else
         begin
             currentWord := Concat(currentWord, currentChar);
         end;
-    end
+    end;
+    
+    if WordIsMeaningful(currentWord) then
+        NormalizeAndFlushWord(currentWord);
 end;
 
 
