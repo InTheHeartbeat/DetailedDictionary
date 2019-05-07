@@ -24,6 +24,20 @@ begin
     SetLength(arr, arr.Length + 1);
     arr[arr.Length - 1] := ch;
 end;
+
+
+function StringArrayContains(arr: array of string; str: string) : boolean;
+  var i : integer;
+begin
+    for i := 0 to arr.Length - 1 do
+    begin
+        if CompareStr(arr[i], str) = 0 then
+        begin
+            StringArrayContains := true;
+            Break;
+        end;
+    end;
+end;
    
    
 procedure InitializeVocals();
@@ -93,8 +107,13 @@ end;
 
 
 procedure NormalizeAndFlushWord(currentWord: string);
+  var wordBase : string;
 begin
-
+    wordBase := DetectWordBase(currentWord);
+    if not StringArrayContains(wordBases, wordBase) then
+    begin
+    
+    end;
 end;
 
 
