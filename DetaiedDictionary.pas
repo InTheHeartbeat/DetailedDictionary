@@ -79,10 +79,46 @@ begin
 end;
 
 
-procedure ParseStringToWords(data: string);
-  var currentWord : string;
+function WordIsMeaningful(currentWord : string) : boolean;
+  var i : integer;
+begin
+    for i := 0 to currentWord.Length - 1 do
+    begin 
+        if not IsSeparator(currentWord[i]) then
+        begin
+            WordIsMeaningful := true;
+        end;
+    end;
+end;
+
+
+procedure NormalizeAndFlushWord(currentWord: string);
 begin
 
+end;
+
+
+procedure ParseStringToWords(data: string);
+  var currentWord  : string;
+      currentChar  : char;
+      dataPosition : integer;
+begin
+    currentWord := '';
+    currentChar := ' ';
+    
+    for dataPosition := 0 to data.Length - 1 do
+    begin
+        currentChar := data[dataPosition];
+    
+        if IsSeparator(currentChar) and WordIsMeaningful(currentWord) then
+        begin
+            NormalizeAndFlushWord(currentWord);
+        end
+        else
+        begin
+            currentWord := Concat(currentWord, currentChar);
+        end;
+    end
 end;
 
 
