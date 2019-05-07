@@ -11,7 +11,14 @@ program DetailedDictionary;
       separators       : array of char;
    
 
-procedure PrintArray(arr: array of char);
+procedure PrintCharArray(arr: array of char);
+  var i : integer;
+begin
+    for i := 0 to arr.Length - 1 do
+        Writeln(arr[i]);
+end;
+
+procedure PrintStringArray(arr: array of string);
   var i : integer;
 begin
     for i := 0 to arr.Length - 1 do
@@ -26,6 +33,27 @@ begin
 end;
 
 
+procedure AddStringToArray(arr: array of string; str: string);
+begin
+    SetLength(arr, arr.Length + 1);
+    arr[arr.Length - 1] := str;
+end;
+
+
+function CharArrayContains(arr: array of char; c: char) : boolean;
+  var i : integer;
+begin
+    for i := 0 to arr.Length - 1 do
+    begin
+        if arr[i] = c then
+        begin
+            CharArrayContains := true;
+            Break;
+        end;
+    end;
+end;
+
+
 function StringArrayContains(arr: array of string; str: string) : boolean;
   var i : integer;
 begin
@@ -37,6 +65,18 @@ begin
             Break;
         end;
     end;
+end;
+   
+   
+function IsVocal(c: char) :  boolean;
+begin
+    IsVocal := CharArrayContains(vocals, c);
+end;
+   
+   
+function LastCharOf(str: string) : char;
+begin
+    LastCharOf := str[str.Length];
 end;
    
    
@@ -75,6 +115,7 @@ end;
 procedure Initialize();
 begin
     InitializeVocals();
+    InitializeSeparators();
     InitializeStorage();
 end;
 
@@ -82,6 +123,7 @@ end;
 function IsSeparator(ch: char) : boolean;
   var i : integer;
 begin
+    IsSeparator := false;
     for i := 0 to separators.Length - 1 do
     begin
         if separators[i] = ch then 
@@ -96,7 +138,7 @@ end;
 function WordIsMeaningful(currentWord : string) : boolean;
   var i : integer;
 begin
-    for i := 0 to currentWord.Length - 1 do
+    for i := 1 to currentWord.Length do
     begin 
         if not IsSeparator(currentWord[i]) then
         begin
@@ -106,13 +148,27 @@ begin
 end;
 
 
+function DetectWordBase(currentWord: string) : string;
+  var wordBase : string;
+begin
+    wordBase := currentWord;
+
+    if IsVocal(LastCharOf(currentWord)) then
+    begin
+        wordBase := Copy(currentWord, 1, currentWord.Length - 1);
+    end;
+    
+    DetectWordBase := wordBase;
+end;
+
+
 procedure NormalizeAndFlushWord(currentWord: string);
   var wordBase : string;
 begin
     wordBase := DetectWordBase(currentWord);
     if not StringArrayContains(wordBases, wordBase) then
     begin
-    
+        AddStringToArray(wordBases, wordBase);
     end;
 end;
 
@@ -125,7 +181,7 @@ begin
     currentWord := '';
     currentChar := ' ';
     
-    for dataPosition := 0 to data.Length - 1 do
+    for dataPosition := 1 to data.Length do
     begin
         currentChar := data[dataPosition];
     
@@ -154,5 +210,6 @@ end;
 begin
     Initialize();
     ParseUserInputToWords();
+    PrintStringArray(wordBases);
 end.
 
